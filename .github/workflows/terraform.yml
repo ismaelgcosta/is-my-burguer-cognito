@@ -46,7 +46,7 @@ name: 'Terraform'
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ $default-branch ]
   pull_request:
 
 permissions:
@@ -91,9 +91,13 @@ jobs:
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
       
     - name: Echo
-      if: github.ref == 'refs/heads/"main"'
+      if: github.ref == 'refs/heads/${{ github.event.repository.default_branch }}'
       run: echo ${{github.event_name}}
 
     - name: Terraform Apply
+<<<<<<< Updated upstream
       if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+=======
+      if: github.ref == 'refs/heads/${{ github.event.repository.default_branch }}' && github.event_name == 'push'
+>>>>>>> Stashed changes
       run: terraform apply -auto-approve -input=false
