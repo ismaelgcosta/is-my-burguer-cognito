@@ -95,9 +95,5 @@ jobs:
       run: echo ${{github.event_name}}
 
     - name: Terraform Apply
-<<<<<<< Updated upstream
-      if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
-=======
       if: github.ref == 'refs/heads/${{ github.event.repository.default_branch }}' && github.event_name == 'push'
->>>>>>> Stashed changes
       run: terraform apply -auto-approve -input=false
