@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "lambda_role" {
+data "aws_iam_policy_document" "lambda_policy" {
   statement {
     effect = "Allow"
 
@@ -7,13 +7,26 @@ data "aws_iam_policy_document" "lambda_role" {
       identifiers = ["lambda.amazonaws.com"]
     }
 
-    actions = ["sts:AssumeRole"]
+    actions = [
+      "sts:AssumeRole",
+      "cognito-idp:DescribeUserPool",
+      "cognito-idp:CreateUserPoolClient",
+      "cognito-idp:DeleteUserPoolClient",
+      "cognito-idp:DescribeUserPoolClient",
+      "cognito-idp:AdminInitiateAuth",
+      "cognito-idp:AdminUserGlobalSignOut",
+      "cognito-idp:ListUserPoolClients",
+      "cognito-identity:DescribeIdentityPool",
+      "cognito-identity:UpdateIdentityPool",
+      "cognito-identity:SetIdentityPoolRoles",
+      "cognito-identity:GetIdentityPoolRoles"
+    ]
   }
 }
 
 resource "aws_iam_role" "iam_for_lambda" {
   name               = "iam_for_lambda"
-  assume_role_policy = data.aws_iam_policy_document.lambda_role.json
+  assume_role_policy = data.aws_iam_policy_document.lambda_policy.json
 }
 
 data "archive_file" "lambda-client-credentials" {
