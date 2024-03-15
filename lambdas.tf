@@ -8,18 +8,7 @@ data "aws_iam_policy_document" "lambda_policy" {
     }
 
     actions = [
-      "sts:AssumeRole",
-      "cognito-idp:DescribeUserPool",
-      "cognito-idp:CreateUserPoolClient",
-      "cognito-idp:DeleteUserPoolClient",
-      "cognito-idp:DescribeUserPoolClient",
-      "cognito-idp:AdminInitiateAuth",
-      "cognito-idp:AdminUserGlobalSignOut",
-      "cognito-idp:ListUserPoolClients",
-      "cognito-identity:DescribeIdentityPool",
-      "cognito-identity:UpdateIdentityPool",
-      "cognito-identity:SetIdentityPoolRoles",
-      "cognito-identity:GetIdentityPoolRoles"
+      "sts:AssumeRole"
     ]
   }
 }
@@ -28,6 +17,18 @@ resource "aws_iam_role" "iam_for_lambda" {
   name               = "iam_for_lambda"
   assume_role_policy = data.aws_iam_policy_document.lambda_policy.json
 }
+
+resource "aws_iam_role_policy_attachment" "role-policy-attachment" {
+  for_each = toset([
+    "arn:aws:iam::aws:policy/service-role/ROSAKMSProviderPolicy", 
+    "arn:aws:iam::aws:policy/AmazonESCognitoAccess", 
+    "arn:aws:iam::aws:policy/AmazonCognitoPowerUser"
+  ])
+
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = each.value
+}
+
 
 data "archive_file" "lambda-client-credentials" {
   type        = "zip"
@@ -63,6 +64,7 @@ resource "aws_lambda_function" "cognito-client-credentials" {
 
   source_code_hash = data.archive_file.lambda-client-credentials.output_base64sha256
 
+  publish = true
   runtime = "python3.12"
 
   environment {
@@ -83,6 +85,7 @@ resource "aws_lambda_function" "cognito-sign-up" {
 
   source_code_hash = data.archive_file.lambda-sign-up.output_base64sha256
 
+  publish = true
   runtime = "python3.12"
 
   environment {
@@ -104,6 +107,7 @@ resource "aws_lambda_function" "cognito-confirm-sign-up" {
 
   source_code_hash = data.archive_file.lambda-confirm-sign-up.output_base64sha256
 
+  publish = true
   runtime = "python3.12"
 
   environment {
@@ -125,6 +129,7 @@ resource "aws_lambda_function" "cognito-sign-in" {
 
   source_code_hash = data.archive_file.lambda-signin.output_base64sha256
 
+  publish = true
   runtime = "python3.12"
 
   environment {

@@ -26,7 +26,7 @@ def lambda_handler(event, context):
     else :
         body = event.get('body', event)
     
-    for field in ["username", "password", "code"]:
+    for field in ["username", "password", "code", "cpf"]:
         if not body.get(field, None):
             return {'body': json.dumps({ "title" : f"{field} é obrigatório", 
                                         "detail" : f"{field} é obrigatório", 
@@ -38,6 +38,7 @@ def lambda_handler(event, context):
     username = body['username']
     password = body['password']
     code = body['code']
+    cpf = body['cpf']
 
     try:
         response = client.confirm_sign_up(
@@ -71,6 +72,14 @@ def lambda_handler(event, context):
                     "content-type": "application/json"
                 }
             }
+    except client.exceptions.AliasExistsException as e:
+        return {'body': json.dumps({ "title" : "O CPF/E-mail informado já se encontra associado a outra conta", 
+                                        "detail" : "O CPF/E-mail informado já se encontra associado a outra conta", 
+                                        "status": 400 }), "statusCode": 400, 
+                "headers": {
+                    "content-type": "application/json"
+                }
+            }
     except Exception as e:
         return {'body': json.dumps({ "title" : "Erro desconhecido", 
                                         "detail" : f"Erro desconhecido {e.__str__()}", 
@@ -79,6 +88,17 @@ def lambda_handler(event, context):
                     "content-type": "application/json"
                 }
             }
+            
+    client.admin_update_user_attributes(
+        UserPoolId=USER_POOL_ID,
+        Username=username,
+        UserAttributes=[
+            {
+                'Name': "preferred_username",
+                'Value': cpf
+            }
+        ]
+    )
     return {"statusCode": 200, 
                 "headers": {
                     "content-type": "application/json"

@@ -3,6 +3,7 @@ resource "aws_cognito_user_pool" "is-my-burguer" {
   name              = local.name
   mfa_configuration = "OFF"
 
+  alias_attributes = [ "email", "preferred_username" ]
   auto_verified_attributes = ["email"]
 
   account_recovery_setting {
