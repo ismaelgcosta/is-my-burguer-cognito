@@ -39,21 +39,23 @@ def get_all_users():
     
 def getAttributes(usersDetails):
     users = []
-    for idx, user in enumerate(usersDetails):
-        keys = [d['Name'] for d in user["Attributes"]]
-        values = [d['Value'] for d in user["Attributes"]]
-            
-        for idx, field in enumerate(keys):
-            if field == "custom:CPF":
-                cpf = values[idx]
-            if field == "email":
-                email = values[idx]
-        users.append({
-            "cpf" : cpf,
-            "email" : email
-        })
-    return users
 
+    if usersDetails != None:
+        for idx, user in enumerate(usersDetails):
+            keys = [d['Name'] for d in user["Attributes"]]
+            values = [d['Value'] for d in user["Attributes"]]
+                
+            for idx, field in enumerate(keys):
+                if field == "custom:CPF":
+                    cpf = values[idx]
+                if field == "email":
+                    email = values[idx]
+            users.append({
+                "cpf" : cpf,
+                "email" : email
+            })
+
+    return users
     
 def lambda_handler(event, context):
     
@@ -93,8 +95,6 @@ def lambda_handler(event, context):
                         "content-type": "application/json"
                     }
                 }
-    
-    return f"{users}"
 
     try:
         response = client.sign_up(
