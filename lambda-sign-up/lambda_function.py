@@ -17,6 +17,46 @@ def get_secret_hash(username):
     d2 = base64.b64encode(dig).decode()
     return d2
     
+def get_all_users():
+    cognito = boto3.client('cognito-idp')
+    
+    users = []
+    next_page = None
+    kwargs = {
+        'UserPoolId': USER_POOL_ID
+    }
+
+    users_remain = True
+    while users_remain:
+        if next_page:
+            kwargs['PaginationToken'] = next_page
+        response = cognito.list_users(**kwargs)
+        users.extend(response['Users'])
+        next_page = response.get('PaginationToken', None)
+        users_remain = next_page is not None
+
+    return users
+    
+def getAttributes(usersDetails):
+    users = []
+
+    if usersDetails <> None:
+        for idx, user in enumerate(usersDetails):
+            keys = [d['Name'] for d in user["Attributes"]]
+            values = [d['Value'] for d in user["Attributes"]]
+                
+            for idx, field in enumerate(keys):
+                if field == "custom:CPF":
+                    cpf = values[idx]
+                if field == "email":
+                    email = values[idx]
+            users.append({
+                "cpf" : cpf,
+                "email" : email
+            })
+
+    return users
+    
 def lambda_handler(event, context):
     
     # tratamento para testar via console aws e também rest-api
@@ -27,19 +67,20 @@ def lambda_handler(event, context):
     
     for field in ["username", "email", "password", "name", "cpf"]:
         if not body.get(field, None):
-            return {"error": True, "success": False,  'message': f"{field} é obrigatório"}
-    
-    for field in ["username", "email", "password", "name", "cpf"]:
-        if not body.get(field, None):
-            return {"error": False, "success": True,  'message': f"{field} é obrigatório", "data": None}
+            return {'body': json.dumps({ "title" : f"{field} é obrigatório", 
+                                        "detail" : f"{field} é obrigatório", 
+                                        "status": 400 }), "statusCode": 400, 
+                "headers": {
+                    "content-type": "application/json"
+                }
+            }
+
     username = body['username']
     email = body["email"]
     password = body['password']
     name = body["name"]
     cpf = body["cpf"]
     client = boto3.client('cognito-idp')
-<<<<<<< Updated upstream
-=======
     
     users = getAttributes(get_all_users())
     
@@ -54,7 +95,8 @@ def lambda_handler(event, context):
                         "content-type": "application/json"
                     }
                 }
->>>>>>> Stashed changes
+    
+    return f"{users}"
 
     try:
         response = client.sign_up(
@@ -82,7 +124,7 @@ def lambda_handler(event, context):
                 'Value': email
             },
             {
-                'Name': "custom:username",
+                'Name': "username",
                 'Value': username
             },
             {
@@ -93,37 +135,50 @@ def lambda_handler(event, context):
     
     
     except client.exceptions.UsernameExistsException as e:
-        return {"error": False, 
-               "success": True, 
-               "message": "O username informado já existe", 
-               "data": None}
+        return {'body': json.dumps({ "title" : "O username informado já existe", 
+                                        "detail" : "O username informado já existe", 
+                                        "status": 400 }), "statusCode": 400, 
+                "headers": {
+                    "content-type": "application/json"
+                }
+            }    
     except client.exceptions.InvalidPasswordException as e:
-        
-        return {"error": False, 
-               "success": True, 
-               "message": "Password should have Caps,\
-                          Special chars, Numbers", 
-               "data": None}
+        return {'body': json.dumps({ "title" : "A senha deve ter letras maiúsculas, símbolos e números", 
+                                        "detail" : "O username informado já existe", 
+                                        "status": 400 }), "statusCode": 400, 
+                "headers": {
+                    "content-type": "application/json"
+                }
+            }
     except client.exceptions.UserLambdaValidationException as e:
-        return {"error": False, 
-               "success": True, 
-               "message": "O E-mail informado já existe", 
-               "data": None}
+        return {'body': json.dumps({ "title" : "O E-mail informado já existe", 
+                                        "detail" : "O E-mail informado já existe", 
+                                        "status": 400 }), "statusCode": 400, 
+                "headers": {
+                    "content-type": "application/json"
+                }
+            }
                
     except client.exceptions.InvalidParameterException as e:
-        return {"error": False, 
-               "success": True, 
-               "message": "O CPF informado está em um formato ou tamanho inválido", 
-               "data": None}
-    
-    
+        return {'body': json.dumps({ "title" : "O CPF informado está em um formato ou tamanho inválido", 
+                                        "detail" : "O CPF informado está em um formato ou tamanho inválido", 
+                                        "status": 400 }), "statusCode": 400, 
+                "headers": {
+                    "content-type": "application/json"
+                }
+            }    
     except Exception as e:
-        return {"error": False, 
-                "success": True, 
-                "message": str(e), 
-               "data": None}
-    
-    return {"error": False, 
-            "success": True, 
-            "message": "Por favor, confirme seu cadastro, verifique o código de autenticação na sua caixa de E-mail", 
-            "data": None}
+        return {'body': json.dumps({ "title" : "Erro desconhecido", 
+                                        "detail" : f"Erro desconhecido {e.__str__()}", 
+                                        "status": 400 }), "statusCode": 400, 
+                "headers": {
+                    "content-type": "application/json"
+                }
+            }
+    return {'body': json.dumps({
+                    "message": "Por favor, confirme seu cadastro, verifique o código de autenticação na sua caixa de E-mail"
+            }), "statusCode": 200,
+            "headers": {
+                "content-type": "application/json"
+            }
+        }
