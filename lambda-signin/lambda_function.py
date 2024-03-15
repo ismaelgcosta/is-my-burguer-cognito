@@ -63,11 +63,14 @@ def lambda_handler(event, context):
     password = body['password']
                 
     resp, msg = initiate_auth(client, username, password)
-    
-    #return {"error": True, "success": False,  'message': f"{resp} é obrigatório"}
-    
+
     if msg != None:
-        return {'message': msg, "error": True, "success": False}
+        return {'body': json.dumps({ "title" : "Request Error", "detail" : f"{msg}", "status": 400 }), "statusCode": 400, 
+            "headers": {
+                "content-type": "application/json"
+            }
+        }
+
     if resp.get("AuthenticationResult"):
         
         userDetail = client.get_user(AccessToken=resp["AuthenticationResult"]["AccessToken"])
@@ -80,9 +83,6 @@ def lambda_handler(event, context):
                 cpf = values[idx]
             if field == "email":
                 email = values[idx]
-        
-        #print([d['Name'] for d in userDetail["UserAttributes"]])
-        print(map(lambda d: d['Name'], userDetail["UserAttributes"]))
         
         return {
                    "statusCode": 200, 
