@@ -40,7 +40,7 @@ def get_all_users():
 def getAttributes(usersDetails):
     users = []
 
-    if usersDetails <> None:
+    if usersDetails != None:
         for idx, user in enumerate(usersDetails):
             keys = [d['Name'] for d in user["Attributes"]]
             values = [d['Value'] for d in user["Attributes"]]
