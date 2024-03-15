@@ -95,8 +95,6 @@ def lambda_handler(event, context):
                         "content-type": "application/json"
                     }
                 }
-    
-    return f"{users}"
 
     try:
         response = client.sign_up(
