@@ -21,7 +21,8 @@ resource "aws_iam_role" "iam_for_lambda" {
 resource "aws_iam_role_policy_attachment" "role-policy-attachment" {
   for_each = toset([
     "arn:aws:iam::aws:policy/service-role/ROSAKMSProviderPolicy", 
-    "arn:aws:iam::aws:policy/AmazonESCognitoAccess"
+    "arn:aws:iam::aws:policy/AmazonESCognitoAccess", 
+    "arn:aws:iam::aws:policy/AmazonCognitoPowerUser"
   ])
 
   role       = aws_iam_role.iam_for_lambda.name
