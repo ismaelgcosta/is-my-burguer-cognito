@@ -38,6 +38,23 @@ def lambda_handler(event, context):
     name = body["name"]
     cpf = body["cpf"]
     client = boto3.client('cognito-idp')
+<<<<<<< Updated upstream
+=======
+    
+    users = getAttributes(get_all_users())
+    
+    for field in ["username", "email", "password", "name", "cpf"]:
+        for idx, user in enumerate(users):
+            if body.get(field, None) == user.get(field, None):
+                val = body.get(field, None)
+                return {'body': json.dumps({ "title" : f"O {field} informado já existe", 
+                                        "detail" : f"O {field} informado \"{val}\" já existe", 
+                                        "status": 400 }), "statusCode": 400, 
+                    "headers": {
+                        "content-type": "application/json"
+                    }
+                }
+>>>>>>> Stashed changes
 
     try:
         response = client.sign_up(
