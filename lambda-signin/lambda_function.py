@@ -41,6 +41,8 @@ def initiate_auth(client, username, password):
               })
     except client.exceptions.NotAuthorizedException:
         return None, "O usuário ou senha estão inválidos"
+    except client.exceptions.UserNotFoundException:
+        return None, "O usuário ou senha estão inválidos"
     except client.exceptions.UserNotConfirmedException:
         return None, "O usuário ainda não foi confirmado, verifique seu e-mail"
     except Exception as e:
@@ -91,11 +93,7 @@ def lambda_handler(event, context):
                     "refresh_token": resp["AuthenticationResult"]["RefreshToken"],
                     "access_token": resp["AuthenticationResult"]["AccessToken"],
                     "expires_in": resp["AuthenticationResult"]["ExpiresIn"],
-                    "token_type": resp["AuthenticationResult"]["TokenType"],
-                    "user_detail": {
-                        "cpf": cpf,
-                        "email": email
-                    }
+                    "token_type": resp["AuthenticationResult"]["TokenType"]
                     }), 
                     "headers": {
                         "content-type": "application/json"

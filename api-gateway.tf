@@ -54,6 +54,15 @@ resource "aws_apigatewayv2_route" "cognito-api-gateway-user-token" {
   target = "integrations/${aws_apigatewayv2_integration.cognito-api-gateway-user-token.id}"
 }
 
+resource "aws_apigatewayv2_route" "cognito-api-gateway-user-info" {
+  api_id             = aws_apigatewayv2_api.cognito-api-gateway.id
+  route_key          = "ANY /user/info"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.cognito-api-gateway.id
+
+  target = "integrations/${aws_apigatewayv2_integration.cognito-api-gateway-user-info.id}"
+}
+
 resource "aws_apigatewayv2_route" "cognito-api-gateway-user-sign-up" {
   api_id             = aws_apigatewayv2_api.cognito-api-gateway.id
   route_key          = "ANY /user/sign-up"
@@ -88,6 +97,16 @@ resource "aws_apigatewayv2_integration" "cognito-api-gateway-user-token" {
   integration_uri  = aws_lambda_function.cognito-sign-in.invoke_arn
   payload_format_version = "2.0"
 }
+
+
+resource "aws_apigatewayv2_integration" "cognito-api-gateway-user-info" {
+  api_id           = aws_apigatewayv2_api.cognito-api-gateway.id
+  integration_type = "AWS_PROXY"
+ 
+  integration_uri  = aws_lambda_function.cognito-user-info.invoke_arn
+  payload_format_version = "2.0"
+}
+
 
 resource "aws_apigatewayv2_integration" "cognito-api-gateway-user-sign-up" {
   api_id           = aws_apigatewayv2_api.cognito-api-gateway.id
@@ -138,6 +157,19 @@ resource "aws_lambda_permission" "lambda-permission-cognito-confirm-sign-up" {
   # within API Gateway.
   source_arn = "${aws_apigatewayv2_api.cognito-api-gateway.execution_arn}/*/*/user/sign-up/confirm"
 }
+
+
+resource "aws_lambda_permission" "lambda-permission-cognito-user-info" {
+  statement_id  = "cognitoUserInfoAPIInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.cognito-user-info.arn}"
+  principal     = "apigateway.amazonaws.com"
+
+  # The /* part allows invocation from any stage, method and resource path
+  # within API Gateway.
+  source_arn = "${aws_apigatewayv2_api.cognito-api-gateway.execution_arn}/*/*/user/info"
+} 
+
 
 resource "aws_lambda_permission" "lambda-permission-cognito-client-credentials" {
   statement_id  = "cognitoClientCredentialsAPIInvoke"
