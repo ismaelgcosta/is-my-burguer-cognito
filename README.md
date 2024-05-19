@@ -2,7 +2,6 @@
 
 Projeto para aplicação de conhecimentos da Fase 4 da Pós-Graduação em SOFTWARE ARCHITECTURE da FIAP
 
-
 ## Estrutura na AWS
 
 ![alt text](/docs/is-my-burguer-cognito.png)
