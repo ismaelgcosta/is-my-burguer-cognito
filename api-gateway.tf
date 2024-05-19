@@ -1,6 +1,13 @@
 resource "aws_apigatewayv2_api" "cognito-api-gateway" {
   name          = "cognito-api-gateway"
   protocol_type = "HTTP"
+  cors_configuration { 
+    allow_methods = ["*"]
+    expose_headers = ["*"]
+    allow_headers = ["*"]
+    allow_origins = ["*"]
+    max_age = 0
+  }
 }
 
 resource "aws_apigatewayv2_stage" "cognito-api-gateway-stage" {
