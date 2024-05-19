@@ -72,6 +72,7 @@ resource "aws_lambda_function" "cognito-client-credentials" {
 
   publish = true
   runtime = "python3.12"
+  timeout = 10
 
   environment {
     variables = {
@@ -93,6 +94,7 @@ resource "aws_lambda_function" "cognito-sign-up" {
 
   publish = true
   runtime = "python3.12"
+  timeout = 10
 
   environment {
     variables = {
@@ -115,6 +117,7 @@ resource "aws_lambda_function" "cognito-confirm-sign-up" {
 
   publish = true
   runtime = "python3.12"
+  timeout = 10
 
   environment {
     variables = {
@@ -137,6 +140,7 @@ resource "aws_lambda_function" "cognito-sign-in" {
 
   publish = true
   runtime = "python3.12"
+  timeout = 10
 
   environment {
     variables = {
@@ -159,4 +163,6 @@ resource "aws_lambda_function" "cognito-user-info" {
 
   publish = true
   runtime = "python3.12"
+  timeout = 10
+
 }
