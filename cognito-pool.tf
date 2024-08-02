@@ -3,7 +3,7 @@ resource "aws_cognito_user_pool" "is-my-burguer" {
   name              = local.name
   mfa_configuration = "OFF"
 
-  alias_attributes = [ "email", "preferred_username" ]
+  alias_attributes         = ["email", "preferred_username"]
   auto_verified_attributes = ["email"]
 
   account_recovery_setting {
@@ -78,7 +78,7 @@ resource "aws_cognito_user_pool_client" "is-my-burguer-api-client" {
     "${aws_cognito_resource_server.is-my-burguer-resource-server.name}/read",
     "${aws_cognito_resource_server.is-my-burguer-resource-server.name}/write"
   ]
-  supported_identity_providers         = ["COGNITO"]
+  supported_identity_providers = ["COGNITO"]
 }
 
 resource "aws_cognito_user_pool_client" "is-my-burguer-lambda-client" {
@@ -109,6 +109,6 @@ resource "aws_cognito_user_pool_client" "is-my-burguer-totem-client" {
     "${aws_cognito_resource_server.is-my-burguer-resource-server.name}/read",
     "${aws_cognito_resource_server.is-my-burguer-resource-server.name}/write"
   ]
-  supported_identity_providers         = ["COGNITO"]
+  supported_identity_providers = ["COGNITO"]
 }
 
