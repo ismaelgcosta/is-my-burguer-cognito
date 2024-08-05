@@ -6,7 +6,6 @@ Projeto para aplicação de conhecimentos da Fase 5 da Pós-Graduação em SOFTW
 
 ![alt text](/docs/is-my-burguer-cognito.png)
 
-
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
