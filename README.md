@@ -1,6 +1,6 @@
 # Is My Burguer Cognito
 
-Projeto para aplicação de conhecimentos da Fase 4 da Pós-Graduação em SOFTWARE ARCHITECTURE da FIAP
+Projeto para aplicação de conhecimentos da Fase 5 da Pós-Graduação em SOFTWARE ARCHITECTURE da FIAP
 
 ## Estrutura na AWS
 
